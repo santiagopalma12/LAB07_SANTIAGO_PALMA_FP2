@@ -1,40 +1,60 @@
 package Lab_5;
 
-
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Videojuego4 {
     public static void main(String[] args) {
-    	String continuar=null;
-    	do {
-    	
-        Soldado[][] tablero = new Soldado[10][10];
-        ArrayList<Soldado> soldados = new ArrayList<>();
-        int numeroSoldados = (int) (Math.random() * 11);
-        int vidaTotal = 0;
+        Scanner scanner = new Scanner(System.in);
+        String continuar;
 
-        for (int i = 0; i < numeroSoldados; i++) {
-            Soldado soldado;
-            int vida, fila, columna;
-            do {
-                vida = (int) (Math.random() * 6) + 1;
-                fila = (int) (Math.random() * 10);
-                columna = (int) (Math.random() * 10);
-                soldado = new Soldado("Soldado" + i, vida, fila, columna);
-            } while (verificar(tablero, soldado));
-            tablero[fila][columna] = soldado;
-            soldados.add(soldado);
-            vidaTotal += vida;
-        }
+        do {
+            Soldado[][] tablero = new Soldado[10][10];
+            ArrayList<Soldado> soldados = new ArrayList<>();
+            int vidaTotalEjercito1 = 0, vidaTotalEjercito2 = 0;
+            int numeroSoldados = (int) (Math.random() * 11);
 
-        mostrar(tablero);
-        soldadoMayorVida(soldados);
-        mostrarDatosEjercito(soldados, vidaTotal);
-        rankingSoldadosBurbuja(soldados);
-        rankingSoldadosSeleccion(soldados);
-        System.out.println("Desea seguir jugando?, Ingrese si para seguir jugando o pulse cualquier otra tecla para salir");
-    	} while (continuar.equals("si"));
-    	System.out.println("Saliendo, gracias por jugar.");
+            for (int i = 0; i < numeroSoldados; i++) {
+                Soldado soldado;
+                int vida, fila, columna;
+                String ejercito;
+
+                if (i % 2 == 0) {
+                    ejercito = "Ejército 1";
+                } else {
+                    ejercito = "Ejército 2";
+                }
+
+                do {
+                    vida = (int) (Math.random() * 6) + 1;
+                    fila = (int) (Math.random() * 10);
+                    columna = (int) (Math.random() * 10);
+                    soldado = new Soldado("Soldado" + i, vida, fila, columna, ejercito);
+                } while (verificar(tablero, soldado));
+                tablero[fila][columna] = soldado;
+                soldados.add(soldado);
+
+                if (ejercito.equals("Ejército 1")) {
+                    vidaTotalEjercito1 += vida;
+                } else {
+                    vidaTotalEjercito2 += vida;
+                }
+            }
+
+            mostrar(tablero);
+            soldadoMayorVida(soldados);
+            mostrarDatosEjercito(soldados, vidaTotalEjercito1, vidaTotalEjercito2);
+            rankingSoldadosBurbuja(soldados);
+            rankingSoldadosSeleccion(soldados);
+            determinarGanador(vidaTotalEjercito1, vidaTotalEjercito2);
+
+            System.out.println("¿Desea seguir jugando? Ingrese 'si' para continuar o cualquier otra tecla para salir.");
+            continuar = scanner.nextLine();
+
+        } while (continuar.equalsIgnoreCase("si"));
+
+        System.out.println("Saliendo, gracias por jugar.");
+        scanner.close();
     }
 
     public static boolean verificar(Soldado[][] tablero, Soldado soldado) {
@@ -55,19 +75,25 @@ public class Videojuego4 {
     }
 
     public static void soldadoMayorVida(ArrayList<Soldado> soldados) {
+        if (soldados.isEmpty()) {
+            System.out.println("No hay soldados para determinar el soldado con mayor vida.");
+            return;
+        }
+
         Soldado soldadoMayor = soldados.get(0);
         for (Soldado soldado : soldados) {
             if (soldado.getNivelVida() > soldadoMayor.getNivelVida()) {
                 soldadoMayor = soldado;
             }
         }
-        System.out.println("Soldado con mayor nivel de vida: " + soldadoMayor.getNombre() + 
-                           " (Vida: " + soldadoMayor.getNivelVida() + ")");
+        System.out.println("Soldado con mayor nivel de vida: " + soldadoMayor.getNombre() +
+                " (Vida: " + soldadoMayor.getNivelVida() + ")");
     }
 
-    public static void mostrarDatosEjercito(ArrayList<Soldado> soldados, int vidaTotal) {
-        System.out.println("Vida total del ejército: " + vidaTotal);		
-        System.out.println("Promedio de vida del ejército: " + (vidaTotal / soldados.size()));
+    public static void mostrarDatosEjercito(ArrayList<Soldado> soldados, int vidaTotalEjercito1,
+            int vidaTotalEjercito2) {
+        System.out.println("Vida total del Ejército 1: " + vidaTotalEjercito1);
+        System.out.println("Vida total del Ejército 2: " + vidaTotalEjercito2);
     }
 
     public static void rankingSoldadosBurbuja(ArrayList<Soldado> soldados) {
@@ -84,7 +110,8 @@ public class Videojuego4 {
 
         System.out.println("Ranking de poder de los soldados (Burbuja):");
         for (Soldado soldado : soldadosArray) {
-            System.out.println(soldado.getNombre() + " - Vida: " + soldado.getNivelVida());
+            System.out.println(soldado.getNombre() + " - Vida: " + soldado.getNivelVida() + " - Ejército: "
+                    + soldado.getEjercito());
         }
     }
 
@@ -105,7 +132,18 @@ public class Videojuego4 {
 
         System.out.println("Ranking de poder de los soldados (Selección):");
         for (Soldado soldado : soldadosArray) {
-            System.out.println(soldado.getNombre() + " - Vida: " + soldado.getNivelVida());
+            System.out.println(soldado.getNombre() + " - Vida: " + soldado.getNivelVida() + " - Ejército: "
+                    + soldado.getEjercito());
+        }
+    }
+
+    public static void determinarGanador(int vidaTotalEjercito1, int vidaTotalEjercito2) {
+        if (vidaTotalEjercito1 > vidaTotalEjercito2) {
+            System.out.println("¡El Ejército 1 ha ganado!");
+        } else if (vidaTotalEjercito1 < vidaTotalEjercito2) {
+            System.out.println("¡El Ejército 2 ha ganado!");
+        } else {
+            System.out.println("¡Empate entre los ejércitos!");
         }
     }
 }
