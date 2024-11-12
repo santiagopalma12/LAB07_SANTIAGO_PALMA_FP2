@@ -3,14 +3,16 @@ package Lab_5;
 public class Soldado {
     private String nombre;
     private int nivelVida;
-    public int fila;
-    public int columna;
-    
-    public Soldado(String nombre, int nivelVida, int fila, int columna) {
+    private int fila;
+    private int columna;
+    private String ejercito;  
+
+    public Soldado(String nombre, int nivelVida, int fila, int columna, String ejercito) {
         this.nombre = nombre;
         this.nivelVida = nivelVida;
-        this.columna=columna;
-        this.fila= fila;
+        this.fila = fila;
+        this.columna = columna;
+        this.ejercito = ejercito;  
     }
 
     public String getNombre() {
@@ -20,13 +22,20 @@ public class Soldado {
     public int getNivelVida() {
         return nivelVida;
     }
-    public int getfila() {
-    	return fila;
+
+    public int getFila() {
+        return fila;
     }
-    public int getcolumna() {
-    	return columna;
+
+    public int getColumna() {
+        return columna;
     }
-    public String toString() {
-        return nombre + " (Vida: " + nivelVida + ", Posición: (" + fila + ", " + columna + "))";
+
+    public String getEjercito() {
+        return ejercito;
+    }
+
+    public void setEjercito(String ejercito) {
+        this.ejercito = ejercito;
     }
 }
